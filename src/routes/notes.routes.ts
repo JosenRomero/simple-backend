@@ -1,11 +1,13 @@
 import { Router } from "express";
 import notesController from '../controllers/notes.controller';
 
+import multer from '../config/multerConfig';
+
 const router = Router();
 
 router.get("/:id", notesController.getNote);
 
-router.post("/", notesController.newNote);
+router.post("/", multer.single('image'), notesController.newNote);
 
 router.put("/:id", notesController.updateNote);
 

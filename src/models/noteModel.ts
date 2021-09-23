@@ -2,11 +2,15 @@ import { Schema, model, Document } from "mongoose";
 
 const NoteSchema = new Schema(
     {
-        title: {
+        description: {
           type: String,
-          required: [true, "title is required"],
+          required: [true, "Description is required"],
           trim: true,
-        } 
+        },
+        imagePath: {
+            type: String,
+            required: [true, "Photo is required"]
+        }
     },
     {
         timestamps: true
@@ -14,7 +18,8 @@ const NoteSchema = new Schema(
 );
 
 interface INote extends Document {
-    title: string;
+    description: string;
+    imagePath: string;
 }
 
 export const Note = model<INote>("Note", NoteSchema);

@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Note } from '../models/noteModel';
 
+import fs from 'fs'; // file system
+import path from 'path';
+
 class NotesController {
 
     constructor() {
@@ -24,7 +27,16 @@ class NotesController {
 
         try {
 
-            await Note.create(req.body);
+            const { description } = req.body;
+            const photo = req.file;
+
+            const note = {
+                description,
+                imagePath: photo?.path
+            }
+
+            await Note.create(note);
+        
             res.json({message: "Note Saved"});
             
         } catch (err) {
@@ -50,7 +62,18 @@ class NotesController {
 
         try {
 
-            await Note.findByIdAndDelete(req.params.id);
+            const { id } = req.params;
+
+            const note = await Note.findByIdAndDelete(id);
+
+            if(note && note.imagePath) {
+
+                const imagePath = path.resolve(note.imagePath);
+
+                await fs.promises.unlink(imagePath);
+
+            }
+
             res.json({status: "Note Deleted"});
             
         } catch (err) {
