@@ -1,7 +1,13 @@
 import express from 'express';
 import path from 'path';
+import cors from 'cors';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import notesRouter from './routes/notes.routes';
 import './config/database';
+
 
 const app = express();
 
@@ -9,6 +15,13 @@ const app = express();
 app.set("port", process.env.PORT || 3001)
 
 app.use(express.json());
+
+// set up cors to allow us to accept requests from our client
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
+    credentials: true // allow session cookie from browser to pass through
+}));
 
 // Routes
 app.use("/api/note", notesRouter);

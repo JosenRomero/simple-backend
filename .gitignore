@@ -5,3 +5,5 @@
 /build
 
 /uploads
+
+.env

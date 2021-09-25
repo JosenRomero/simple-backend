@@ -1,6 +1,6 @@
 import { connect } from "mongoose";
 
-const URI: string = "mongodb://localhost/notesDB";
+const URI: string = process.env.URI_DB!;
 
 export const connection = (async () => {
 
