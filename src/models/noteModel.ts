@@ -7,9 +7,12 @@ const NoteSchema = new Schema(
           required: [true, "Description is required"],
           trim: true,
         },
-        imagePath: {
+        imagePath: { // for the images in cloudinary
             type: String,
             required: [true, "Photo is required"]
+        },
+        public_id: { // for the images in cloudinary
+            type: String
         }
     },
     {
@@ -20,6 +23,7 @@ const NoteSchema = new Schema(
 interface INote extends Document {
     description: string;
     imagePath: string;
+    public_id: string;
 }
 
 export const Note = model<INote>("Note", NoteSchema);

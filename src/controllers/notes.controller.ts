@@ -1,12 +1,27 @@
 import { Request, Response } from "express";
+
+import cloudinary from '../config/cloudinaryConfig';
+
 import { Note } from '../models/noteModel';
 
 import fs from 'fs'; // file system
-import path from 'path';
 
 class NotesController {
 
     constructor() {
+
+    }
+
+    async getNotes(req: Request, res: Response) {
+
+        try {
+
+            const notes = await Note.find();
+            res.json(notes);
+            
+        } catch (err) {
+            console.error("Failed to get notes");
+        }
 
     }
 
@@ -28,16 +43,29 @@ class NotesController {
         try {
 
             const { description } = req.body;
-            const photo = req.file;
-
-            const note = {
-                description,
-                imagePath: photo?.path
-            }
-
-            await Note.create(note);
         
-            res.json({message: "Note Saved"});
+            const imgPath = req.file?.path; // string || undefined
+
+            if(imgPath) {
+
+                const infoImg = await cloudinary.v2.uploader.upload(imgPath); 
+
+                const note = {
+                    description,
+                    imagePath: infoImg.secure_url,
+                    public_id: infoImg.public_id
+                }
+
+                await Note.create(note); 
+
+                // delete image of the uploads folder  
+                await fs.promises.unlink(imgPath);
+            
+                res.json({message: "Note Saved"});
+
+            } else {
+                throw "imagePath is not string";
+            }
             
         } catch (err) {
             console.error("Failed to new note");
@@ -66,11 +94,9 @@ class NotesController {
 
             const note = await Note.findByIdAndDelete(id);
 
-            if(note && note.imagePath) {
+            if(note && note.public_id) {
 
-                const imagePath = path.resolve(note.imagePath);
-
-                await fs.promises.unlink(imagePath);
+                await cloudinary.v2.uploader.destroy(note.public_id);
 
             }
 
@@ -86,4 +112,4 @@ class NotesController {
 
 const notesController = new NotesController();
 
- export default notesController;
+export default notesController;

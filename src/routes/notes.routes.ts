@@ -5,6 +5,8 @@ import multer from '../config/multerConfig';
 
 const router = Router();
 
+router.get("/", notesController.getNotes);
+
 router.get("/:id", notesController.getNote);
 
 router.post("/", multer.single('image'), notesController.newNote);
