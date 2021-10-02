@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import cloudinary from '../config/cloudinaryConfig';
 
@@ -12,36 +12,36 @@ class NotesController {
 
     }
 
-    async getNotes(req: Request, res: Response) {
+    async getNotes(req: Request, res: Response, next: NextFunction) {
 
         try {
 
             const notes = await Note.find();
             res.json(notes);
-            
+
         } catch (err) {
-            console.error("Failed to get notes");
+            next({error: err, message: "Failed to get notes", status: 404});
         }
 
     }
 
-    async getNote(req: Request, res: Response) {
+    async getNote(req: Request, res: Response, next: NextFunction) {
 
         try {
-
+            
             const note = await Note.findById(req.params.id);
             res.json(note);
             
         } catch (err) {
-            console.error("Failed to get note");
+            next({error: err, message: "Failed to get note", status: 404});
         }
 
     }
 
-    async newNote(req: Request, res: Response) {
+    async newNote(req: Request, res: Response, next: NextFunction) {
 
         try {
-
+            
             const { description } = req.body;
         
             const imgPath = req.file?.path; // string || undefined
@@ -68,25 +68,25 @@ class NotesController {
             }
             
         } catch (err) {
-            console.error("Failed to new note");
+            next({error: err, message: "Failed to new note", status: 500});
         }
 
     }
 
-    async updateNote(req: Request, res: Response) {
+    async updateNote(req: Request, res: Response, next: NextFunction) {
 
         try {
 
-            const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {new: true})
-            res.json(updatedNote)
+            const updatedNote = await Note.findByIdAndUpdate(req.params.id, req.body, {new: true});
+            res.json(updatedNote);
 
         } catch (err) {
-            console.error("Failed to update note");
+            next({error: err, message: "Failed to update note", status: 500});
         }
 
     }
 
-    async deleteNote(req: Request, res: Response) {
+    async deleteNote(req: Request, res: Response, next: NextFunction) {
 
         try {
 
@@ -103,7 +103,7 @@ class NotesController {
             res.json({status: "Note Deleted"});
             
         } catch (err) {
-            console.error("Failed to delete note");
+            next({error: err, message: "Failed to delete note", status: 500});
         }
 
     }

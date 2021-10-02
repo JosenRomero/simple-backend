@@ -1,15 +1,16 @@
-import express from 'express';
+import express, { Application } from 'express';
 import path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import notFound from './middlewares/notFound';
+import handleErrors from './middlewares/handleErrors';
 
 dotenv.config();
 
 import notesRouter from './routes/notes.routes';
 import './config/database';
 
-
-const app = express();
+const app: Application = express();
 
 // Settings
 app.set("port", process.env.PORT || 3001)
@@ -27,6 +28,10 @@ app.use(cors({
 app.use("/api/note", notesRouter);
 
 app.use('/uploads', express.static(path.resolve('uploads')));
+
+app.use(notFound);
+
+app.use(handleErrors);
 
 // Starting the server
 app.listen(app.get("port"), () => {
