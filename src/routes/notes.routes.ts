@@ -5,7 +5,7 @@ import multer from '../config/multerConfig';
 
 const router = Router();
 
-router.get("/", notesController.getNotes);
+router.get("/all/userId/:userId", notesController.getNotes);
 
 router.get("/:id", notesController.getNote);
 

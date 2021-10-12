@@ -16,7 +16,17 @@ class NotesController {
 
         try {
 
-            const notes = await Note.find();
+            const { userId } = req.params;
+
+            const notes = await Note.aggregate([
+                {
+                    $match: {
+                        // get "api/note/all/userId/:userId"
+                        userId: userId
+                    }
+                }
+            ]);
+
             res.json(notes);
 
         } catch (err) {
@@ -42,7 +52,7 @@ class NotesController {
 
         try {
             
-            const { description } = req.body;
+            const { description, userId } = req.body;
         
             const imgPath = req.file?.path; // string || undefined
 
@@ -51,6 +61,7 @@ class NotesController {
                 const infoImg = await cloudinary.v2.uploader.upload(imgPath); 
 
                 const note = {
+                    userId,
                     description,
                     imagePath: infoImg.secure_url,
                     public_id: infoImg.public_id
